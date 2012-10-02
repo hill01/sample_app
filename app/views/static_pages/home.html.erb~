@@ -1,0 +1,14 @@
+<% provide(:title, 'Home') %>
+<!DCOTYPE html>
+<html>
+  <head>
+    <title>Sample App | <%= yield(:title) %></title>
+  </head>
+
+  <body>
+    <h1>Sample App</h1>
+    <p>
+      This is the home page for a rails sample application.
+    </p>
+  </body>
+</html>
