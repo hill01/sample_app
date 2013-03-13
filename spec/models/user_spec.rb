@@ -2,11 +2,14 @@
 #
 # Table name: users
 #
-#  id         :integer          not null, primary key
-#  name       :string(255)
-#  email      :string(255)
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id              :integer          not null, primary key
+#  name            :string(255)
+#  email           :string(255)
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  password_digest :string(255)
+#  remember_token  :string(255)
+#  admin           :boolean          default(FALSE)
 #
 
 require 'spec_helper'
@@ -158,21 +161,25 @@ describe User do
       end
     end
 
-    describe "status" do
-      let(:unfollowed_post) do
-        FactoryGirl.create(:micropost, user: FactoryGirl.create(:user))
-      end
-
+    describe "status feed" do
+      let(:unfollowed_user) {FactoryGirl.create(:user)}
       let(:followed_user) {FactoryGirl.create(:user)}
+
+      let(:unfollowed_post) {FactoryGirl.create(:micropost, 
+		user: unfollowed_user, content: "Lorem ipsum")}
+
+      let(:reply) {FactoryGirl.create(:micropost, user: unfollowed_user, 
+		content: "@#{@user.email} Hello")}
 
       before do
         @user.follow!(followed_user)
         3.times {followed_user.microposts.create!(content: "Lorem ipsum")}
       end
  
-      its(:feed){should include(new_micropost)}
-      its(:feed){should include(old_micropost)}
-      its(:feed){should_not include(unfollowed_post)}
+      its(:feed) {should include(new_micropost)}
+      its(:feed) {should include(old_micropost)}
+      its(:feed) {should_not include(unfollowed_post)}
+      its(:feed) {should include(reply)}
       its(:feed) do
         followed_user.microposts.each do |micropost|
           should include(micropost)
